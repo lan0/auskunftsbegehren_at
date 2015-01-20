@@ -2,7 +2,6 @@
 import datetime
 from io import BytesIO
 
-from django.http import HttpResponse
 from django.utils.translation import ugettext as _
 
 from dinbrief.document import Document
@@ -59,21 +58,14 @@ class InformationRequest():
             content = self._content()
         )
 
-        # create response instance
-        response = HttpResponse(content_type='application/pdf')
-        filename = "dsg-2000-auskunft-" + self.sender_name.replace(' ','-').lower() + ".pdf"
-        response['Content-Disposition'] = \
-            'attachment; filename="' + filename + '"'
-
         # build letter template
         buff = BytesIO()
         template = BriefTemplate(buff, document)
         template.build(document.content)
         pdf_response = buff.getvalue()
         buff.close()
-
-        response.write(pdf_response)
-        return response
+        
+        return pdf_response
 
     def _content(self):
         # TODO: move styles somewhere else
